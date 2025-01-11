@@ -12,52 +12,47 @@ use RuntimeException;
 
 beforeEach(function () {
     $this->provider = new ServiceProvider($this->app);
-
     // Mock the config helper to return null by default
     config(['timr' => null]);
 });
 
-test('register throws exception with missing base_url', function () {
-    config([
-        'timr.token' => 'test-token',
+it('throws exception with invalid configuration', function (array $config) {
+    config($config);
+
+    // Register services
+    $this->provider->register();
+
+    // Try to resolve the service which should trigger validation
+    expect(fn () => $this->app->make(TokenManager::class))
+        ->toThrow(RuntimeException::class, 'Timr API configuration is missing or invalid');
+})->with([
+    'missing base_url' => [[
+        'timr.token_url' => 'test-token',
         'timr.base_url' => null,
-    ]);
-
-    expect(fn () => $this->provider->register())
-        ->toThrow(RuntimeException::class, 'Timr API configuration is missing or invalid');
-});
-
-test('register throws exception with missing token', function () {
-    config([
+        'timr.client_id' => 'test-client-id',
+        'timr.client_secret' => 'test-client-secret',
+    ]],
+    'missing token_url' => [[
         'timr.base_url' => 'http://api.example.com',
-        'timr.token' => null,
-    ]);
-
-    expect(fn () => $this->provider->register())
-        ->toThrow(RuntimeException::class, 'Timr API configuration is missing or invalid');
-});
-
-test('register throws exception with empty base_url', function () {
-    config([
+        'timr.token_url' => null,
+        'timr.client_id' => 'test-client-id',
+        'timr.client_secret' => 'test-client-secret',
+    ]],
+    'empty base_url' => [[
         'timr.base_url' => '',
-        'timr.token' => 'test-token',
-    ]);
-
-    expect(fn () => $this->provider->register())
-        ->toThrow(RuntimeException::class, 'Timr API configuration is missing or invalid');
-});
-
-test('register throws exception with empty token', function () {
-    config([
+        'timr.token_url' => 'test-token',
+        'timr.client_id' => 'test-client-id',
+        'timr.client_secret' => 'test-client-secret',
+    ]],
+    'empty token_url' => [[
         'timr.base_url' => 'http://api.example.com',
-        'timr.token' => '',
-    ]);
+        'timr.token_url' => '',
+        'timr.client_id' => 'test-client-id',
+        'timr.client_secret' => 'test-client-secret',
+    ]],
+]);
 
-    expect(fn () => $this->provider->register())
-        ->toThrow(RuntimeException::class, 'Timr API configuration is missing or invalid');
-});
-
-test('register binds interfaces correctly', function () {
+it('binds interfaces correctly', function () {
     config([
         'timr.base_url' => 'http://api.example.com',
         'timr.token_url' => 'http://api.example.com/token',
@@ -67,19 +62,12 @@ test('register binds interfaces correctly', function () {
 
     $this->provider->register();
 
-    // Test TokenManager binding
-    $tokenManager = $this->app->make(TokenManager::class);
-    expect($tokenManager)->toBeInstanceOf(TokenManager::class);
-
-    // Test TimrClientInterface binding
-    $timrClient = $this->app->make(TimrClientInterface::class);
-    expect($timrClient)->toBeInstanceOf(TimrClient::class);
-
-    // Test ProjectTimeRepositoryInterface binding
-    $repository = $this->app->make(ProjectTimeRepositoryInterface::class);
-    expect($repository)->toBeInstanceOf(ProjectTimeRepositoryInterface::class);
-
-    // Test 'timr' binding
-    $timrService = $this->app->make('timr');
-    expect($timrService)->toBeInstanceOf(TimrService::class);
+    expect($this->app->make(TokenManager::class))
+        ->toBeInstanceOf(TokenManager::class)
+        ->and($this->app->make(TimrClientInterface::class))
+        ->toBeInstanceOf(TimrClient::class)
+        ->and($this->app->make(ProjectTimeRepositoryInterface::class))
+        ->toBeInstanceOf(ProjectTimeRepositoryInterface::class)
+        ->and($this->app->make('timr'))
+        ->toBeInstanceOf(TimrService::class);
 });
