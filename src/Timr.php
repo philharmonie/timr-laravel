@@ -9,6 +9,7 @@ use YourVendor\LaravelTimr\DTOs\ProjectTimeCollection;
 
 /**
  * @method static ProjectTimeCollection projectTimes(array $filters = [])
+ * @method static array updateProjectTime(string $id, array $data)
  */
 final class Timr extends Facade
 {

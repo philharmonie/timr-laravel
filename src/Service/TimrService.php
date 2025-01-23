@@ -20,4 +20,13 @@ final readonly class TimrService
     {
         return $this->projectTimeRepository->list($filters);
     }
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    public function updateProjectTime(string $id, array $data): array
+    {
+        return $this->projectTimeRepository->update($id, $data);
+    }
 }

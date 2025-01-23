@@ -23,4 +23,14 @@ final readonly class ProjectTimeRepository implements ProjectTimeRepositoryInter
 
         return ProjectTimeCollection::fromArray($response);
     }
+
+    public function update(string $id, array $data): array
+    {
+        $endpoint = "project-times/{$id}";
+
+        /** @var array<string, mixed> $response */
+        $response = $this->client->patch($endpoint, $data);
+
+        return $response;
+    }
 }

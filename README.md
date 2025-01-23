@@ -6,7 +6,7 @@
 
 ## About
 
-This package provides a foundation for integrating with the Timr API. Currently, only the `Project-Times` endpoint is implemented. Contributions to extend the functionality are highly encouraged and welcome!
+This package provides a foundation for integrating with the Timr API. Currently, the `Project-Times` endpoint is implemented, including listing and updating project times. Contributions to extend the functionality are highly encouraged and welcome!
 
 ## Requirements
 
@@ -72,6 +72,13 @@ foreach ($projectTimes->getItems() as $projectTime) {
     echo $projectTime->start->format('Y-m-d H:i:s');
     echo $projectTime->billable ? 'Billable' : 'Not billable';
 }
+
+// Update a project time
+$response = Timr::updateProjectTime('project-time-id', [
+    'start' => '2025-01-01T08:00:00Z',
+    'end' => '2025-01-01T12:00:00Z',
+    'notes' => 'Updated notes',
+]);
 ```
 
 #### Using the Service Directly
@@ -91,6 +98,13 @@ class YourController
     {
         $projectTimes = $this->timrService->projectTimes([
             'start_from' => '2025-01-01'
+        ]);
+    }
+
+    public function update(string $id)
+    {
+        $updatedProjectTime = $this->timrService->updateProjectTime($id, [
+            'notes' => 'Updated project notes'
         ]);
     }
 }

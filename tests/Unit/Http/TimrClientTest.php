@@ -28,14 +28,13 @@ beforeEach(function () {
 test('gets data successfully', function () {
     $expectedResponse = ['data' => ['test' => true]];
 
-    // Mock die HTTP-Antwort
     $responseMock = Mockery::mock(Response::class);
     $responseMock->shouldReceive('getBody->getContents')
         ->once()
         ->andReturn(json_encode($expectedResponse));
 
-    $this->client->shouldReceive('get')
-        ->with('test-endpoint', [
+    $this->client->shouldReceive('request')
+        ->with('GET', 'test-endpoint', [
             'headers' => [
                 'Authorization' => 'Bearer test-token',
                 'Accept' => 'application/json',
@@ -56,7 +55,8 @@ test('handles empty response', function () {
         ->once()
         ->andReturn('');
 
-    $this->client->shouldReceive('get')
+    $this->client->shouldReceive('request')
+        ->with('GET', 'test-endpoint', Mockery::any())
         ->once()
         ->andReturn($responseMock);
 
@@ -66,7 +66,9 @@ test('handles empty response', function () {
 
 test('handles network error', function () {
     $request = new Request('GET', 'test-endpoint');
-    $this->client->shouldReceive('get')
+
+    $this->client->shouldReceive('request')
+        ->with('GET', 'test-endpoint', Mockery::any())
         ->once()
         ->andThrow(new RequestException('Network error', $request));
 
@@ -80,20 +82,19 @@ test('handles malformed json', function () {
         ->once()
         ->andReturn('{"invalid": json}');
 
-    $this->client->shouldReceive('get')
+    $this->client->shouldReceive('request')
+        ->with('GET', 'test-endpoint', Mockery::any())
         ->once()
         ->andReturn($responseMock);
 
     expect(fn () => $this->timrClient->get('test-endpoint'))
-        ->toThrow(TimrException::class);
+        ->toThrow(TimrException::class, 'Timr API request failed: Syntax error');
 });
 
 test('creates client with default configuration when no client provided', function () {
-    // Nutze den FakeTokenProvider für die Typprüfung
     $tokenProvider = new FakeTokenProvider;
     $baseUrl = 'https://api.timr.com';
 
-    // Erstelle den TimrClient mit dem korrekten Typ
     $timrClient = new TimrClient($tokenProvider, $baseUrl);
 
     expect($timrClient)->toBeInstanceOf(TimrClient::class);

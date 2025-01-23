@@ -66,7 +66,7 @@ test('fromArray creates ProjectTime object with all optional fields', function (
 test('fromArray throws exception for invalid date format', function () {
     $data = [
         'id' => 'test-id',
-        'start' => 'invalid-date',  // Invalid date format
+        'start' => 'invalid-date',
         'break_time_total_minutes' => 30,
         'break_times' => [],
         'changed' => true,
@@ -84,7 +84,7 @@ test('fromArray throws exception for invalid date format', function () {
 test('fromArray throws exception for null required field', function () {
     $data = [
         'id' => 'test-id',
-        'start' => null,  // Required field is null
+        'start' => null,
         'break_time_total_minutes' => 30,
         'break_times' => [],
         'changed' => true,
@@ -103,7 +103,6 @@ test('fromArray throws exception for null required field', function () {
 test('assertString throws exception for missing field', function () {
     $data = [
         'id' => 'test-id',
-        // start field is missing entirely
         'break_time_total_minutes' => 30,
         'break_times' => [],
         'changed' => true,
@@ -120,12 +119,10 @@ test('assertString throws exception for missing field', function () {
 });
 
 test('assertBreakTimesArray handles various invalid scenarios', function () {
-    // Test 1: break_times is not set
     $data1 = [
         'id' => 'test-id',
         'start' => '2024-01-01T00:00:00Z',
         'break_time_total_minutes' => 30,
-        // break_times is missing
         'changed' => true,
         'user' => [],
         'task' => [],
@@ -138,7 +135,6 @@ test('assertBreakTimesArray handles various invalid scenarios', function () {
     expect(fn () => ProjectTime::fromArray($data1))
         ->toThrow(InvalidArgumentException::class, "Field 'break_times' must be an array");
 
-    // Test 2: break_times is not an array
     $data2 = [
         'id' => 'test-id',
         'start' => '2024-01-01T00:00:00Z',
@@ -156,7 +152,6 @@ test('assertBreakTimesArray handles various invalid scenarios', function () {
     expect(fn () => ProjectTime::fromArray($data2))
         ->toThrow(InvalidArgumentException::class, "Field 'break_times' must be an array");
 
-    // Test 3: break_times contains non-array element
     $data3 = [
         'id' => 'test-id',
         'start' => '2024-01-01T00:00:00Z',
@@ -179,7 +174,7 @@ test('assertStringOrNull handles various invalid cases', function () {
     $data = [
         'id' => 'test-id',
         'start' => '2024-01-01T00:00:00Z',
-        'end' => 123, // Invalid: should be string or null
+        'end' => 123,
         'break_time_total_minutes' => 30,
         'break_times' => [],
         'changed' => true,
@@ -199,7 +194,7 @@ test('assertInt throws exception for non-integer value', function () {
     $data = [
         'id' => 'test-id',
         'start' => '2024-01-01T00:00:00Z',
-        'break_time_total_minutes' => '30', // String instead of int
+        'break_time_total_minutes' => '30',
         'break_times' => [],
         'changed' => true,
         'user' => [],
@@ -218,7 +213,6 @@ test('assertInt throws exception for missing integer field', function () {
     $data = [
         'id' => 'test-id',
         'start' => '2024-01-01T00:00:00Z',
-        // break_time_total_minutes is missing
         'break_times' => [],
         'changed' => true,
         'user' => [],
@@ -239,7 +233,7 @@ test('assertBool throws exception for non-boolean value', function () {
         'start' => '2024-01-01T00:00:00Z',
         'break_time_total_minutes' => 30,
         'break_times' => [],
-        'changed' => 1, // Number instead of boolean
+        'changed' => 1,
         'user' => [],
         'task' => [],
         'billable' => true,
@@ -258,7 +252,6 @@ test('assertBool throws exception for missing boolean field', function () {
         'start' => '2024-01-01T00:00:00Z',
         'break_time_total_minutes' => 30,
         'break_times' => [],
-        // changed is missing
         'user' => [],
         'task' => [],
         'billable' => true,
@@ -278,7 +271,6 @@ test('assertArray throws exception for missing required array', function () {
         'break_time_total_minutes' => 30,
         'break_times' => [],
         'changed' => true,
-        // user field is missing
         'task' => [],
         'billable' => true,
         'start_platform' => 'web',
@@ -297,7 +289,7 @@ test('assertArray throws exception for non-array value', function () {
         'break_time_total_minutes' => 30,
         'break_times' => [],
         'changed' => true,
-        'user' => 'not-an-array',  // String instead of array
+        'user' => 'not-an-array',
         'task' => [],
         'billable' => true,
         'start_platform' => 'web',
@@ -310,7 +302,6 @@ test('assertArray throws exception for non-array value', function () {
 });
 
 test('assertArrayOrNull handles various cases correctly', function () {
-    // Test 1: Valid null value
     $data1 = [
         'id' => 'test-id',
         'start' => '2024-01-01T00:00:00Z',
@@ -329,7 +320,6 @@ test('assertArrayOrNull handles various cases correctly', function () {
     $projectTime1 = ProjectTime::fromArray($data1);
     expect($projectTime1->duration)->toBeNull();
 
-    // Test 2: Invalid non-array value
     $data2 = [
         'id' => 'test-id',
         'start' => '2024-01-01T00:00:00Z',
@@ -340,7 +330,7 @@ test('assertArrayOrNull handles various cases correctly', function () {
         'task' => [],
         'billable' => true,
         'start_platform' => 'web',
-        'duration' => 'not-an-array',  // String instead of array or null
+        'duration' => 'not-an-array',
         'last_modified' => '2024-01-01T00:00:00Z',
         'status' => 'active',
     ];
@@ -349,7 +339,6 @@ test('assertArrayOrNull handles various cases correctly', function () {
         ->toThrow(InvalidArgumentException::class, "Field 'duration' must be an array or null");
 });
 
-// Test für fehlenden Array-Wert
 test('assertArray throws exception when field is missing', function () {
     $data = [
         'id' => 'test-id',
@@ -357,7 +346,6 @@ test('assertArray throws exception when field is missing', function () {
         'break_time_total_minutes' => 30,
         'break_times' => [],
         'changed' => true,
-        // user fehlt komplett
         'task' => [],
         'billable' => true,
         'start_platform' => 'web',
@@ -369,13 +357,11 @@ test('assertArray throws exception when field is missing', function () {
         ->toThrow(InvalidArgumentException::class, "Field 'user' must be an array");
 });
 
-// Test für nicht existierenden break_times Array
 test('assertBreakTimesArray throws exception when field is missing', function () {
     $data = [
         'id' => 'test-id',
         'start' => '2024-01-01T00:00:00Z',
         'break_time_total_minutes' => 30,
-        // break_times fehlt komplett
         'changed' => true,
         'user' => [],
         'task' => [],
@@ -389,14 +375,13 @@ test('assertBreakTimesArray throws exception when field is missing', function ()
         ->toThrow(InvalidArgumentException::class, "Field 'break_times' must be an array");
 });
 
-// Test für die optionale Duration als null
 test('fromArray creates ProjectTime object with null duration', function () {
     $data = [
         'id' => 'test-id',
         'start' => '2024-01-01T00:00:00Z',
         'break_time_total_minutes' => 30,
         'break_times' => [],
-        'duration' => null,  // Explizit null setzen
+        'duration' => null,
         'changed' => true,
         'user' => ['id' => 1],
         'task' => ['id' => 1],
@@ -410,14 +395,12 @@ test('fromArray creates ProjectTime object with null duration', function () {
     expect($projectTime->duration)->toBeNull();
 });
 
-// Test für den Fall, dass duration nicht im Array vorhanden ist
 test('fromArray creates ProjectTime object without duration field', function () {
     $data = [
         'id' => 'test-id',
         'start' => '2024-01-01T00:00:00Z',
         'break_time_total_minutes' => 30,
         'break_times' => [],
-        // duration field ist komplett nicht vorhanden
         'changed' => true,
         'user' => ['id' => 1],
         'task' => ['id' => 1],
@@ -444,11 +427,107 @@ test('fromArray returns null for missing optional string fields', function () {
         'task' => ['id' => 1],
         'last_modified' => '2024-01-01T00:00:00Z',
         'break_time_total_minutes' => 30,
-        // Felder wie `notes` und `end_platform` fehlen
     ];
 
     $projectTime = ProjectTime::fromArray($data);
 
     expect($projectTime->notes)->toBeNull();
     expect($projectTime->endPlatform)->toBeNull();
+});
+
+test('fromArray throws exception if break_times is missing', function () {
+    $data = [
+        'id' => 'test-id',
+        'start' => '2024-01-01T00:00:00Z',
+        'break_time_total_minutes' => 30,
+        'changed' => true,
+        'user' => ['id' => 1],
+        'task' => ['id' => 1],
+        'billable' => true,
+        'start_platform' => 'web',
+        'last_modified' => '2024-01-01T00:00:00Z',
+        'status' => 'active',
+    ];
+
+    expect(fn () => ProjectTime::fromArray($data))
+        ->toThrow(InvalidArgumentException::class, "Field 'break_times' must be an array");
+});
+
+test('fromArray throws exception if break_times contains non-array', function () {
+    $data = [
+        'id' => 'test-id',
+        'start' => '2024-01-01T00:00:00Z',
+        'break_time_total_minutes' => 30,
+        'break_times' => ['not-an-array'],
+        'changed' => true,
+        'user' => ['id' => 1],
+        'task' => ['id' => 1],
+        'billable' => true,
+        'start_platform' => 'web',
+        'last_modified' => '2024-01-01T00:00:00Z',
+        'status' => 'active',
+    ];
+
+    expect(fn () => ProjectTime::fromArray($data))
+        ->toThrow(InvalidArgumentException::class, 'Each break time entry must be an array at index 0');
+});
+
+test('fromArray throws exception if optional string field is invalid', function () {
+    $data = [
+        'id' => 'test-id',
+        'start' => '2024-01-01T00:00:00Z',
+        'break_time_total_minutes' => 30,
+        'break_times' => [],
+        'changed' => true,
+        'notes' => 123,
+        'user' => ['id' => 1],
+        'task' => ['id' => 1],
+        'billable' => true,
+        'start_platform' => 'web',
+        'last_modified' => '2024-01-01T00:00:00Z',
+        'status' => 'active',
+    ];
+
+    expect(fn () => ProjectTime::fromArray($data))
+        ->toThrow(InvalidArgumentException::class, "Field 'notes' must be a string or null");
+});
+
+test('fromArray handles missing optional end field', function () {
+    $data = [
+        'id' => 'test-id',
+        'start' => '2024-01-01T00:00:00Z',
+        'break_time_total_minutes' => 30,
+        'break_times' => [],
+        'changed' => true,
+        'user' => ['id' => 1],
+        'task' => ['id' => 1],
+        'billable' => true,
+        'start_platform' => 'web',
+        'last_modified' => '2024-01-01T00:00:00Z',
+        'status' => 'active',
+    ];
+
+    $projectTime = ProjectTime::fromArray($data);
+
+    expect($projectTime->end)->toBeNull();
+});
+
+test('fromArray throws exception if optional array field is invalid', function () {
+    $data = [
+        'id' => 'test-id',
+        'start' => '2024-01-01T00:00:00Z',
+        'break_time_total_minutes' => 30,
+        'break_times' => [],
+        'changed' => true,
+        'start_location' => 'not-an-array',
+        'user' => ['id' => 1],
+        'task' => ['id' => 1],
+        'billable' => true,
+        'start_platform' => 'web',
+        'last_modified' => '2024-01-01T00:00:00Z',
+        'status' => 'active',
+    ];
+
+    expect(fn () => ProjectTime::fromArray($data))
+        ->toThrow(InvalidArgumentException::class, "Field 'start_location' must be an array or null");
 });

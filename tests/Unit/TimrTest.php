@@ -17,6 +17,11 @@ test('facade resolves to timr service instance', function () {
         {
             return new ProjectTimeCollection([], null);
         }
+
+        public function update(string $id, array $data): array
+        {
+            return ['id' => $id, 'updated_data' => $data];
+        }
     };
 
     $service = new TimrService($repository);

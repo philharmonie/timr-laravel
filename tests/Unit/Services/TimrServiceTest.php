@@ -20,3 +20,21 @@ test('project times returns collection from repository', function () {
 
     expect($result)->toBe($expectedCollection);
 });
+
+test('updateProjectTime calls repository and returns updated data', function () {
+    $repository = Mockery::mock(ProjectTimeRepositoryInterface::class);
+    $service = new TimrService($repository);
+
+    $id = 'test-id';
+    $data = ['key' => 'value'];
+    $expectedResponse = ['id' => $id, 'updated_data' => $data];
+
+    $repository->shouldReceive('update')
+        ->with($id, $data)
+        ->once()
+        ->andReturn($expectedResponse);
+
+    $result = $service->updateProjectTime($id, $data);
+
+    expect($result)->toBe($expectedResponse);
+});
