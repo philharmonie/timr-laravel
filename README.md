@@ -11,8 +11,10 @@ This package provides a foundation for integrating with the Timr API. Currently,
 ## Requirements
 
 - PHP ^8.2
-- Laravel ^10.0
+- Laravel ^10.0, ^11.0 or ^12.0
 - Guzzle ^7.0 or ^8.0
+
+The package targets the timr REST API v1. The v0.2 beta is switched off on 6 October 2026.
 
 ## Installation
 
@@ -41,10 +43,10 @@ php artisan vendor:publish --tag="timr-config"
 Add your Timr API credentials to your `.env` file:
 
 ```
-TIMR_BASE_URL=https://api.timr.com/v0.2/
+TIMR_BASE_URL=https://api.timr.com/v1/
 TIMR_CLIENT_ID=your-client-id
 TIMR_CLIENT_SECRET=your-client-secret
-TIMR_TOKEN_URL=https://api.timr.com/v0.2/token
+TIMR_TOKEN_URL=https://system.timr.com/id/oauth2/token
 ```
 
 ## Usage
@@ -72,6 +74,13 @@ foreach ($projectTimes->getItems() as $projectTime) {
     echo $projectTime->start->format('Y-m-d H:i:s');
     echo $projectTime->billable ? 'Billable' : 'Not billable';
 }
+
+// A page holds at most 500 entries, so fetch every page when you need the
+// complete result set. Returns a flat array of ProjectTime objects.
+$allProjectTimes = Timr::allProjectTimes([
+    'start_from' => '2025-01-01',
+    'billable' => true,
+]);
 
 // Update a project time
 $response = Timr::updateProjectTime('project-time-id', [

@@ -17,6 +17,7 @@ final readonly class ProjectTime
      * @param  array<string, mixed>|null  $startLocation  Start location data
      * @param  array<string, mixed>|null  $endLocation  End location data
      * @param  array<string, mixed>|null  $lastModifiedBy  User who last modified the record
+     * @param  array<string, mixed>|null  $metadata  Client owned metadata
      */
     public function __construct(
         public string $id,
@@ -32,11 +33,12 @@ final readonly class ProjectTime
         public bool $billable,
         public ?array $startLocation,
         public ?array $endLocation,
-        public string $startPlatform,
+        public ?string $startPlatform,
         public ?string $endPlatform,
         public DateTime $lastModified,
         public ?array $lastModifiedBy,
         public string $status,
+        public ?array $metadata = null,
     ) {}
 
     /**
@@ -48,7 +50,6 @@ final readonly class ProjectTime
     {
         // Required string fields validation with type assertion
         $id = self::assertString($data, 'id');
-        $startPlatform = self::assertString($data, 'start_platform');
         $status = self::assertString($data, 'status');
 
         // Required boolean fields validation with type assertion
@@ -69,6 +70,7 @@ final readonly class ProjectTime
 
         // Optional fields validation
         $endStr = isset($data['end']) ? self::assertStringOrNull($data, 'end') : null;
+        $startPlatform = isset($data['start_platform']) ? self::assertStringOrNull($data, 'start_platform') : null;
         $endPlatform = isset($data['end_platform']) ? self::assertStringOrNull($data, 'end_platform') : null;
         $notes = isset($data['notes']) ? self::assertStringOrNull($data, 'notes') : null;
 
@@ -77,6 +79,7 @@ final readonly class ProjectTime
         $startLocation = isset($data['start_location']) ? self::assertArrayOrNull($data, 'start_location') : null;
         $endLocation = isset($data['end_location']) ? self::assertArrayOrNull($data, 'end_location') : null;
         $lastModifiedBy = isset($data['last_modified_by']) ? self::assertArrayOrNull($data, 'last_modified_by') : null;
+        $metadata = isset($data['metadata']) ? self::assertArrayOrNull($data, 'metadata') : null;
 
         return new self(
             id: $id,
@@ -97,6 +100,7 @@ final readonly class ProjectTime
             lastModified: new DateTime($lastModifiedStr),
             lastModifiedBy: $lastModifiedBy,
             status: $status,
+            metadata: $metadata,
         );
     }
 

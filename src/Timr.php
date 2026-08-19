@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace PhilHarmonie\Timr;
 
 use Illuminate\Support\Facades\Facade;
-use YourVendor\LaravelTimr\DTOs\ProjectTimeCollection;
+use PhilHarmonie\Timr\DTOs\ProjectTimeCollection;
 
 /**
  * @method static ProjectTimeCollection projectTimes(array $filters = [])
+ * @method static array allProjectTimes(array $filters = [])
  * @method static array updateProjectTime(string $id, array $data)
  */
 final class Timr extends Facade

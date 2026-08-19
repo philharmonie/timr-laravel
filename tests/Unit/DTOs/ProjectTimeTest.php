@@ -531,3 +531,60 @@ test('fromArray throws exception if optional array field is invalid', function (
     expect(fn () => ProjectTime::fromArray($data))
         ->toThrow(InvalidArgumentException::class, "Field 'start_location' must be an array or null");
 });
+
+test('fromArray accepts a null start_platform', function () {
+    $data = [
+        'id' => 'test-id',
+        'start' => '2024-01-01T00:00:00Z',
+        'break_time_total_minutes' => 30,
+        'break_times' => [],
+        'changed' => true,
+        'user' => ['id' => 1],
+        'task' => ['id' => 1],
+        'billable' => true,
+        'start_platform' => null,
+        'last_modified' => '2024-01-01T00:00:00Z',
+        'status' => 'changeable',
+    ];
+
+    expect(ProjectTime::fromArray($data)->startPlatform)->toBeNull();
+});
+
+test('fromArray reads the metadata object', function () {
+    $data = [
+        'id' => 'test-id',
+        'start' => '2024-01-01T00:00:00Z',
+        'break_time_total_minutes' => 30,
+        'break_times' => [],
+        'changed' => true,
+        'user' => ['id' => 1],
+        'task' => ['id' => 1],
+        'billable' => true,
+        'start_platform' => 'timr_web',
+        'last_modified' => '2024-01-01T00:00:00Z',
+        'status' => 'changeable',
+        'metadata' => ['invoice_id' => 'abc'],
+    ];
+
+    $projectTime = ProjectTime::fromArray($data);
+
+    expect($projectTime->metadata)->toBe(['invoice_id' => 'abc']);
+});
+
+test('fromArray defaults metadata to null', function () {
+    $data = [
+        'id' => 'test-id',
+        'start' => '2024-01-01T00:00:00Z',
+        'break_time_total_minutes' => 30,
+        'break_times' => [],
+        'changed' => true,
+        'user' => ['id' => 1],
+        'task' => ['id' => 1],
+        'billable' => true,
+        'start_platform' => 'timr_web',
+        'last_modified' => '2024-01-01T00:00:00Z',
+        'status' => 'changeable',
+    ];
+
+    expect(ProjectTime::fromArray($data)->metadata)->toBeNull();
+});
