@@ -11,7 +11,7 @@ This package provides a foundation for integrating with the Timr API. Currently,
 ## Requirements
 
 - PHP ^8.2
-- Laravel ^10.0, ^11.0 or ^12.0
+- Laravel ^10.0, ^11.0, ^12.0 or ^13.0
 - Guzzle ^7.0 or ^8.0
 
 The package targets the timr REST API v1. The v0.2 beta is switched off on 6 October 2026.
@@ -130,6 +130,25 @@ $client = app(TimrClientInterface::class);
 
 // GET request
 $response = $client->get('project-times', ['start_from' => '2025-01-01']);
+```
+
+#### Multiple Accounts (Per-Tenant Credentials)
+
+The container bindings use the global `timr.*` config. To talk to several timr
+accounts, build the stack manually. Cached access tokens are scoped per
+client id and token URL, so instances never share a token.
+
+```php
+use PhilHarmonie\Timr\Auth\TokenManager;
+use PhilHarmonie\Timr\Http\TimrClient;
+use PhilHarmonie\Timr\Repositories\ProjectTimeRepository;
+use PhilHarmonie\Timr\Service\TimrService;
+
+$tokenManager = new TokenManager($clientId, $clientSecret, config('timr.token_url'));
+$client = new TimrClient($tokenManager, config('timr.base_url'));
+$timr = new TimrService(new ProjectTimeRepository($client));
+
+$projectTimes = $timr->allProjectTimes(['start_from' => '2025-01-01']);
 ```
 
 ## Extending the Package

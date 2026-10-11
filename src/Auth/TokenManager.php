@@ -21,12 +21,21 @@ final readonly class TokenManager implements TokenProviderInterface
     public function getToken(): string
     {
         /** @var string */
-        $cachedToken = Cache::get(self::CACHE_KEY);
+        $cachedToken = Cache::get($this->cacheKey());
         if ($cachedToken) {
             return $cachedToken;
         }
 
         return $this->fetchToken();
+    }
+
+    /**
+     * Scope the cached token to the credentials, so several TokenManager
+     * instances (e.g. one per tenant) never share an access token.
+     */
+    public function cacheKey(): string
+    {
+        return self::CACHE_KEY.':'.hash('sha256', $this->tokenUrl.'|'.$this->clientId);
     }
 
     private function fetchToken(): string
@@ -51,7 +60,7 @@ final readonly class TokenManager implements TokenProviderInterface
 
             $token = $responseData['access_token'];
 
-            Cache::put(self::CACHE_KEY, $token, self::CACHE_TTL);
+            Cache::put($this->cacheKey(), $token, self::CACHE_TTL);
 
             return $token;
         } catch (Exception $e) {

@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## [unreleased]
 
+## [1.3.0] - 2026-10-11
+
+### 🚀 Features
+
+- Support Laravel 13 (`illuminate/*` ^13.0, testbench 11, Pest 5)
+
+### 🐛 Bug Fixes
+
+- Scope the cached access token per client id and token URL so multiple
+  TokenManager instances (e.g. per tenant) no longer share a token
+
 ## [1.1.0] - 2025-01-23
 
 ### 🚀 Features

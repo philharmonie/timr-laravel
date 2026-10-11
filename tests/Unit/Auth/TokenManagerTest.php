@@ -8,10 +8,15 @@ use Illuminate\Support\Facades\Cache;
 use PhilHarmonie\Timr\Auth\TokenManager;
 use PhilHarmonie\Timr\Exceptions\TimrException;
 
+function timrCacheKey(string $clientId = 'client_id', string $tokenUrl = 'http://example.com'): string
+{
+    return 'timr_access_token:'.hash('sha256', $tokenUrl.'|'.$clientId);
+}
+
 it('returns the cached token if available', function () {
     Cache::shouldReceive('get')
         ->once()
-        ->with('timr_access_token')
+        ->with(timrCacheKey())
         ->andReturn('cached_token');
 
     $manager = new TokenManager('client_id', 'client_secret', 'http://example.com');
@@ -24,12 +29,12 @@ it('returns the cached token if available', function () {
 it('fetches a new token if not cached', function () {
     Cache::shouldReceive('get')
         ->once()
-        ->with('timr_access_token')
+        ->with(timrCacheKey())
         ->andReturn(null);
 
     Cache::shouldReceive('put')
         ->once()
-        ->with('timr_access_token', 'fetched_token', 3500);
+        ->with(timrCacheKey(), 'fetched_token', 3500);
 
     $httpClient = Mockery::mock(Client::class);
     $httpClient->shouldReceive('post')
@@ -55,7 +60,7 @@ it('fetches a new token if not cached', function () {
 it('throws an exception if the token response is invalid', function () {
     Cache::shouldReceive('get')
         ->once()
-        ->with('timr_access_token')
+        ->with(timrCacheKey())
         ->andReturn(null);
 
     $httpClient = Mockery::mock(Client::class);
@@ -83,7 +88,7 @@ it('throws an exception if the token response is invalid', function () {
 it('throws an exception if the token fetch fails', function () {
     Cache::shouldReceive('get')
         ->once()
-        ->with('timr_access_token')
+        ->with(timrCacheKey())
         ->andReturn(null);
 
     $httpClient = Mockery::mock(Client::class);
@@ -106,4 +111,13 @@ it('throws an exception if the token fetch fails', function () {
     $this->expectExceptionMessage('Failed to fetch access token: HTTP request failed');
 
     $manager->getToken();
+});
+
+it('scopes the cached token per client id', function () {
+    $first = new TokenManager('tenant_a', 'secret', 'http://example.com');
+    $second = new TokenManager('tenant_b', 'secret', 'http://example.com');
+
+    expect($first->cacheKey())->toBe(timrCacheKey('tenant_a'))
+        ->and($second->cacheKey())->toBe(timrCacheKey('tenant_b'))
+        ->and($first->cacheKey())->not->toBe($second->cacheKey());
 });
